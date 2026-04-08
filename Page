@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cœur Hebdo Cinéma</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream: #F5F0E8;
+    --dark: #1A1612;
+    --gold: #C9A84C;
+    --gold-light: #E8D5A3;
+    --red: #B03A2E;
+    --text-muted: #6B6157;
+    --card-bg: #FAF7F2;
+    --border: rgba(201,168,76,0.25);
+  }
+
+  body {
+    background-color: var(--dark);
+    color: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* === HEADER === */
+  header {
+    text-align: center;
+    padding: 4rem 2rem 3rem;
+    position: relative;
+    border-bottom: 1px solid var(--border);
+  }
+
+  header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(201,168,76,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .header-eyebrow {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1rem;
+  }
+
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.8rem, 6vw, 5rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    color: var(--cream);
+    margin-bottom: 0.6rem;
+  }
+
+  header h1 span {
+    color: var(--gold);
+    font-style: italic;
+  }
+
+  .header-subtitle {
+    font-size: 14px;
+    font-weight: 300;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+    margin-top: 0.8rem;
+  }
+
+  .header-date {
+    display: inline-block;
+    margin-top: 1.5rem;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid var(--border);
+    padding: 6px 18px;
+    border-radius: 2px;
+  }
+
+  /* === FILTERS === */
+  .filters {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 2rem 2rem 0;
+    flex-wrap: wrap;
+  }
+
+  .filter-btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid rgba(107,97,87,0.4);
+    padding: 7px 18px;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .filter-btn:hover,
+  .filter-btn.active {
+    background: var(--gold);
+    color: var(--dark);
+    border-color: var(--gold);
+  }
+
+  /* === GRID === */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 2px;
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  /* === FILM CARD === */
+  .film-card {
+    position: relative;
+    aspect-ratio: 2/3;
+    overflow: hidden;
+    cursor: pointer;
+    background: #2A2420;
+  }
+
+  .film-card:hover .card-img {
+    transform: scale(1.06);
+    filter: brightness(0.5);
+  }
+
+  .film-card:hover .card-overlay {
+    opacity: 1;
+  }
+
+  .film-card:hover .card-info {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s ease, filter 0.5s ease;
+    filter: brightness(0.85);
+  }
+
+  .card-img-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(160deg, #2A2420 0%, #1A1612 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: filter 0.5s ease;
+  }
+
+  .card-img-placeholder svg {
+    opacity: 0.15;
+    width: 60px;
+    height: 60px;
+  }
+
+  .film-card:hover .card-img-placeholder {
+    filter: brightness(0.4);
+  }
+
+  .card-always-visible {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 2rem 1.2rem 1.2rem;
+    background: linear-gradient(to top, rgba(20,16,12,0.97) 0%, rgba(20,16,12,0.7) 60%, transparent 100%);
+  }
+
+  .card-genre {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 6px;
+  }
+
+  .card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--cream);
+    margin-bottom: 10px;
+  }
+
+  .card-sessions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .session-tag {
+    font-size: 11px;
+    font-weight: 500;
+    background: rgba(201,168,76,0.15);
+    color: var(--gold-light);
+    border: 1px solid rgba(201,168,76,0.3);
+    padding: 3px 9px;
+    border-radius: 2px;
+    letter-spacing: 0.05em;
+  }
+
+  .card-overlay {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 80px;
+  }
+
+  .card-info {
+    text-align: center;
+    transform: translateY(12px);
+    opacity: 0;
+    transition: all 0.35s ease 0.05s;
+    padding: 0 1.5rem;
+  }
+
+  .card-duration {
+    font-size: 12px;
+    color: var(--gold-light);
+    letter-spacing: 0.1em;
+    margin-bottom: 14px;
+  }
+
+  .btn-details {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--dark);
+    background: var(--gold);
+    padding: 9px 22px;
+    border-radius: 2px;
+    border: none;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  /* === MODAL === */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15,12,10,0.92);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    backdrop-filter: blur(4px);
+  }
+
+  .modal-backdrop.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .modal {
+    background: #1E1A16;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    max-width: 680px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    transform: translateY(20px) scale(0.98);
+    transition: transform 0.35s ease;
+  }
+
+  .modal-backdrop.open .modal {
+    transform: translateY(0) scale(1);
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    padding: 2rem 2rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .modal-poster {
+    width: 90px;
+    height: 135px;
+    object-fit: cover;
+    flex-shrink: 0;
+    border-radius: 2px;
+  }
+
+  .modal-poster-placeholder {
+    width: 90px;
+    height: 135px;
+    background: #2A2420;
+    flex-shrink: 0;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-poster-placeholder svg {
+    opacity: 0.2;
+    width: 36px;
+    height: 36px;
+  }
+
+  .modal-meta {
+    flex: 1;
+    padding-top: 4px;
+  }
+
+  .modal-genre {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+
+  .modal-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.7rem;
+    font-weight: 700;
+    line-height: 1.15;
+    color: var(--cream);
+    margin-bottom: 10px;
+  }
+
+  .modal-details {
+    display: flex;
+    gap: 16px;
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .modal-details span { display: flex; align-items: center; gap: 5px; }
+
+  .modal-sessions-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+
+  .modal-sessions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .modal-session-tag {
+    font-size: 13px;
+    font-weight: 500;
+    background: rgba(201,168,76,0.12);
+    color: var(--gold);
+    border: 1px solid rgba(201,168,76,0.3);
+    padding: 5px 14px;
+    border-radius: 2px;
+  }
+
+  .modal-body {
+    padding: 1.75rem 2rem 2rem;
+  }
+
+  .modal-synopsis-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 12px;
+  }
+
+  .modal-synopsis {
+    font-size: 15px;
+    line-height: 1.8;
+    color: rgba(245,240,232,0.8);
+    font-weight: 300;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 1.2rem;
+    right: 1.2rem;
+    background: rgba(201,168,76,0.1);
+    border: 1px solid var(--border);
+    color: var(--gold);
+    width: 36px;
+    height: 36px;
+    border-radius: 2px;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Sans', sans-serif;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+
+  .modal-close:hover { background: rgba(201,168,76,0.2); }
+
+  .modal-header { position: relative; }
+
+  /* === EMPTY STATE === */
+  .empty-state {
+    grid-column: 1/-1;
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text-muted);
+    font-size: 15px;
+    display: none;
+  }
+
+  /* === FOOTER === */
+  footer {
+    text-align: center;
+    padding: 2rem;
+    border-top: 1px solid var(--border);
+    margin-top: 2rem;
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+  }
+
+  footer strong { color: var(--gold); font-weight: 500; }
+
+  /* === SCROLLBAR === */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--dark); }
+  ::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.3); border-radius: 3px; }
+
+  /* === RESPONSIVE === */
+  @media (max-width: 600px) {
+    .grid { grid-template-columns: repeat(2, 1fr); padding: 1rem; gap: 1px; }
+    header { padding: 2.5rem 1.5rem 2rem; }
+    .modal-header { flex-direction: column; gap: 1rem; }
+    .modal-poster, .modal-poster-placeholder { width: 70px; height: 105px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <p class="header-eyebrow">Programme de la semaine</p>
+  <h1>Cœur Hebdo <span>Cinéma</span></h1>
+  <p class="header-subtitle">Films à l'affiche — Sélection hebdomadaire</p>
+  <span class="header-date" id="header-date"></span>
+</header>
+
+<div class="filters">
+  <button class="filter-btn active" onclick="filterFilms('tous')">Tous</button>
+  <button class="filter-btn" onclick="filterFilms('Animation')">Animation</button>
+  <button class="filter-btn" onclick="filterFilms('Drame')">Drame</button>
+  <button class="filter-btn" onclick="filterFilms('Romance')">Romance</button>
+  <button class="filter-btn" onclick="filterFilms('Thriller')">Thriller</button>
+  <button class="filter-btn" onclick="filterFilms('Comédie')">Comédie</button>
+</div>
+
+<main class="grid" id="grid"></main>
+
+<div class="modal-backdrop" id="modal-backdrop" onclick="closeModal(event)">
+  <div class="modal" id="modal">
+    <div class="modal-header" id="modal-header"></div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<footer>
+  <strong>Cœur Hebdo Cinéma</strong> &nbsp;·&nbsp; Pour modifier ce fichier, ouvrez-le dans un éditeur de texte
+</footer>
+
+<script>
+/* =====================================================
+   DONNÉES — Modifiez ici pour ajouter / changer les films
+   ===================================================== */
+const FILMS = [
+  {
+    id: 'f1',
+    titre: 'Brokeback Mountain',
+    genre: 'Drame',
+    duree: '2h14',
+    seances: ['14:00', '20:30'],
+    image: '', // Mettez ici le chemin de l'image, ex: "images/brokeback.jpg"
+    synopsis: "Trois amis inséparables — Peçou, MT et Pekka — partent passer un week-end en forêt, bien décidés à camper, pêcher… et prouver qu'ils savent survivre sans Wi-Fi. Résultat : zéro poisson, beaucoup de pluie, et une tension inattendue qui s'invite entre les tentes. Entre feux de camp ratés et confidences nocturnes, Peçou et MT commencent à se plaindre que Pekka « leur monte un peu trop dessus » — au sens figuré… enfin, surtout. Mais à mesure que le séjour dérape gentiment, les frontières de leur amitié se brouillent. Coincés dans la nature (et dans leurs émotions), les trois garçons vont découvrir que ce week-end pourrait bien mettre leur amitié à l'épreuve… pour la transformer en quelque chose de plus grand — ou de beaucoup plus compliqué. Une comédie douce-amère sur l'amitié, les non-dits, et les voyages qui ne se passent jamais comme prévu."
+  },
+  {
+    id: 'f2',
+    titre: 'Pole Express',
+    genre: 'Animation',
+    duree: '1h40',
+    seances: ['13:30', '18:00'],
+    image: 'https://drive.google.com/uc?export=view&id=1hgHjYjSlICzqdlrLYv5Q7xN-ZNlK13U',
+    synopsis: "La veille d'un retour tant attendu, Zyzy, un garçon hésitant et peu sûr de lui, part en randonnée avec ses amis, avec la promesse de rentrer ensemble à vélo. Mais face à l'effort du trajet retour, il cède à la peur et les abandonne en secret pour rejoindre seul la gare la plus proche et prendre le train. Sur le quai désert, alors que la culpabilité le ronge, un train étrange apparaît, semblant n'attendre que lui. À bord, Zyzy entame un voyage inattendu, peuplé de rencontres troublantes et de situations qui reflètent ses choix et ses regrets. Wagon après wagon, il est confronté à lui-même, à la valeur de l'amitié et au courage qu'il lui a manqué. Ce voyage hors du temps pourrait bien être sa seule chance de réparer son erreur… avant qu'il ne soit trop tard."
+  },
+  {
+    id: 'f3',
+    titre: 'Vacances romaines',
+    genre: 'Romance',
+    duree: '1h58',
+    seances: ['15:00', '21:00'],
+    image: '',
+    synopsis: "Larhow et Rayleigh forment un couple heureux. Pour échapper à la routine suisse, ils s'offrent un week-end en Italie, entre les paysages enchanteurs du lac de Côme et l'effervescence de Milan. Entre disputes absurdes et moments de complicité inattendus, ils redécouvrent ce qui les unit vraiment."
+  },
+  {
+    id: 'f4',
+    titre: 'La Piscine',
+    genre: 'Thriller',
+    duree: '2h00',
+    seances: ['16:30', '20:00'],
+    image: 'https://drive.google.com/uc?export=view&id=1z91aGGXbgZlhLIRiiPtaXz3j8wCc-ja6',
+    synopsis: "Colombe a tout pour réussir : une carrière brillante dans l'industrie suisse, un agenda surchargé et une image de « girl boss » parfaitement maîtrisée. Mais en une semaine, tout déraille. Entre une attaque traumatisante d'un cafard dans des toilettes, une course interminable imposée par son petit ami sur une montée infernale, et une pression professionnelle devenue insoutenable, Colombe craque. Sans prévenir personne, elle claque tout et s'échappe direction le Cap Ferret, bien décidée à ne rien faire… ou presque. Loin de son quotidien effréné, elle découvre un rythme de vie radicalement différent : balades à vélo, rencontres imprévues, silences apaisants et petits plaisirs simples. Mais surtout, elle se redécouvre elle-même, loin des attentes et des performances."
+  },
+  {
+    id: 'f5',
+    titre: 'Rio',
+    genre: 'Animation',
+    duree: '1h36',
+    seances: ['14:00', '17:30'],
+    image: '',
+    synopsis: "Alors qu'elle assiste au concert de Theodora, Mawi rate son itinéraire vers Rio. Faute de voyage, elle se rend à un concert de bossa nova la semaine suivante. Elle espère encore, au détour d'une chanson, trouver quelqu'un avec qui danser la salsa..."
+  },
+  {
+    id: 'f6',
+    titre: 'Comment se faire larguer en 10 leçons',
+    genre: 'Comédie',
+    duree: '1h55',
+    seances: ['18:00', '21:30'],
+    image: '',
+    synopsis: "Tela, femme indépendante, audacieuse et farouchement libre, accepte de passer un week-end à Saint-Étienne avec des amis, bien décidée à profiter sans attaches. Mais l'arrivée de Gros Zizi, son amant aussi imprévisible qu'envahissant, vient bouleverser tous ses plans. Après une soirée bien trop arrosée dont elle ne garde aucun souvenir, Tela tombe de haut : elle a épousé Gros Zizi. Coincée dans un mariage qu'elle n'a jamais voulu, Tela va tout tenter pour retrouver sa liberté. Mais entre disputes explosives, situations absurdes et moments de complicité inattendus, une question finit par s'imposer : et si derrière le chaos se cachait une histoire d'amour improbable ?"
+  },
+  {
+    id: 'f7',
+    titre: 'Film 9',
+    genre: 'Action',
+    duree: '2h00',
+    seances: ['19:00'],
+    image: '',
+    synopsis: 'Synopsis à renseigner...'
+  },
+  {
+    id: 'f8',
+    titre: 'Film 10',
+    genre: 'Drame',
+    duree: '1h30',
+    seances: ['16:00'],
+    image: '',
+    synopsis: 'Synopsis à renseigner...'
+  }
+];
+
+/* =====================================================
+   RENDU
+   ===================================================== */
+const filmIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="2" y="2" width="20" height="20" rx="2"/><path d="M7 2v20M17 2v20M2 12h20M2 7h5M2 17h5M17 7h5M17 17h5"/></svg>`;
+
+function renderCards(films) {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  if (!films.length) {
+    grid.innerHTML = '<div class="empty-state" style="display:block">Aucun film dans cette catégorie.</div>';
+    return;
+  }
+  films.forEach(film => {
+    const imgHtml = film.image
+      ? `<img class="card-img" src="${film.image}" alt="${film.titre}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+         <div class="card-img-placeholder" style="display:none; position:absolute; inset:0;">${filmIcon}</div>`
+      : `<div class="card-img-placeholder">${filmIcon}</div>`;
+
+    const sessionTags = film.seances.map(s => `<span class="session-tag">${s}</span>`).join('');
+
+    const card = document.createElement('div');
+    card.className = 'film-card';
+    card.dataset.genre = film.genre;
+    card.innerHTML = `
+      ${imgHtml}
+      <div class="card-always-visible">
+        <div class="card-genre">${film.genre}</div>
+        <div class="card-title">${film.titre}</div>
+        <div class="card-sessions">${sessionTags}</div>
+      </div>
+      <div class="card-overlay">
+        <div class="card-info">
+          <div class="card-duration">⏱ ${film.duree}</div>
+          <button class="btn-details" onclick="openModal('${film.id}')">Voir le synopsis</button>
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function filterFilms(genre) {
+  document.querySelectorAll('.filter-btn').forEach(b => {
+    b.classList.toggle('active', b.textContent.trim() === (genre === 'tous' ? 'Tous' : genre));
+  });
+  const filtered = genre === 'tous' ? FILMS : FILMS.filter(f => f.genre === genre);
+  renderCards(filtered);
+}
+
+/* =====================================================
+   MODAL
+   ===================================================== */
+function openModal(id) {
+  const film = FILMS.find(f => f.id === id);
+  if (!film) return;
+
+  const imgHtml = film.image
+    ? `<img class="modal-poster" src="${film.image}" alt="${film.titre}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+       <div class="modal-poster-placeholder" style="display:none">${filmIcon}</div>`
+    : `<div class="modal-poster-placeholder">${filmIcon}</div>`;
+
+  const sessionTags = film.seances.map(s => `<span class="modal-session-tag">${s}</span>`).join('');
+
+  document.getElementById('modal-header').innerHTML = `
+    ${imgHtml}
+    <div class="modal-meta">
+      <div class="modal-genre">${film.genre}</div>
+      <div class="modal-title">${film.titre}</div>
+      <div class="modal-details">
+        <span>⏱ ${film.duree}</span>
+      </div>
+      <div class="modal-sessions-label">Séances</div>
+      <div class="modal-sessions">${sessionTags}</div>
+    </div>
+    <button class="modal-close" onclick="closeModalBtn()">✕</button>
+  `;
+
+  document.getElementById('modal-body').innerHTML = `
+    <div class="modal-synopsis-label">Synopsis</div>
+    <p class="modal-synopsis">${film.synopsis}</p>
+  `;
+
+  document.getElementById('modal-backdrop').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('modal-backdrop')) closeModalBtn();
+}
+
+function closeModalBtn() {
+  document.getElementById('modal-backdrop').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModalBtn(); });
+
+/* =====================================================
+   DATE
+   ===================================================== */
+const now = new Date();
+const opts = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+document.getElementById('header-date').textContent = now.toLocaleDateString('fr-FR', opts);
+
+/* Init */
+renderCards(FILMS);
+</script>
+</body>
+</html>
