@@ -1,0 +1,518 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2761
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 <!DOCTYPE html>\
+<html lang="fr">\
+<head>\
+<meta charset="UTF-8">\
+<meta name="viewport" content="width=device-width, initial-scale=1.0">\
+<title>C\'9cur Hebdo Cin\'e9ma</title>\
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">\
+<style>\
+  *, *::before, *::after \{ box-sizing: border-box; margin: 0; padding: 0; \}\
+\
+  body \{\
+    background: #FFF0F3;\
+    font-family: 'Lexend', sans-serif;\
+    min-height: 100vh;\
+    color: #1a1a1a;\
+  \}\
+\
+  header \{\
+    background: #E8294A;\
+    color: white;\
+    text-align: center;\
+    padding: 2.5rem 1.5rem 2rem;\
+  \}\
+\
+  header h1 \{\
+    font-size: clamp(2rem, 5vw, 3.5rem);\
+    font-weight: 700;\
+    letter-spacing: -0.02em;\
+    line-height: 1;\
+  \}\
+\
+  header p \{\
+    margin-top: 0.5rem;\
+    font-size: 14px;\
+    opacity: 0.85;\
+    font-weight: 400;\
+  \}\
+\
+  .filters \{\
+    display: flex;\
+    justify-content: center;\
+    gap: 8px;\
+    padding: 1.5rem 1rem;\
+    flex-wrap: wrap;\
+    background: white;\
+    border-bottom: 2px solid #FFD6DF;\
+  \}\
+\
+  .filter-btn \{\
+    font-family: 'Lexend', sans-serif;\
+    font-size: 13px;\
+    font-weight: 600;\
+    background: #FFF0F3;\
+    color: #E8294A;\
+    border: 2px solid #FFB3C1;\
+    padding: 6px 16px;\
+    border-radius: 20px;\
+    cursor: pointer;\
+    transition: all 0.15s;\
+  \}\
+\
+  .filter-btn:hover, .filter-btn.active \{\
+    background: #E8294A;\
+    color: white;\
+    border-color: #E8294A;\
+  \}\
+\
+  .grid \{\
+    display: grid;\
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));\
+    gap: 16px;\
+    padding: 1.5rem;\
+    max-width: 1200px;\
+    margin: 0 auto;\
+  \}\
+\
+  .film-card \{\
+    background: white;\
+    border-radius: 16px;\
+    overflow: hidden;\
+    border: 2px solid #FFD6DF;\
+    cursor: pointer;\
+    transition: transform 0.15s, box-shadow 0.15s;\
+  \}\
+\
+  .film-card:hover \{\
+    transform: translateY(-4px);\
+    box-shadow: 0 8px 24px rgba(232,41,74,0.15);\
+  \}\
+\
+  .card-img-wrap \{\
+    position: relative;\
+    aspect-ratio: 2/3;\
+    background: #FFE4EA;\
+    overflow: hidden;\
+  \}\
+\
+  .card-img-wrap img \{\
+    width: 100%;\
+    height: 100%;\
+    object-fit: cover;\
+    display: block;\
+  \}\
+\
+  .card-img-placeholder \{\
+    width: 100%;\
+    height: 100%;\
+    display: flex;\
+    align-items: center;\
+    justify-content: center;\
+    background: linear-gradient(135deg, #FFD6DF, #FFB3C1);\
+  \}\
+\
+  .card-img-placeholder svg \{\
+    width: 48px;\
+    height: 48px;\
+    color: #E8294A;\
+    opacity: 0.5;\
+  \}\
+\
+  .genre-badge \{\
+    position: absolute;\
+    top: 10px;\
+    left: 10px;\
+    font-size: 10px;\
+    font-weight: 700;\
+    letter-spacing: 0.08em;\
+    text-transform: uppercase;\
+    background: #E8294A;\
+    color: white;\
+    padding: 3px 10px;\
+    border-radius: 20px;\
+  \}\
+\
+  .card-body \{\
+    padding: 14px;\
+  \}\
+\
+  .card-title \{\
+    font-size: 15px;\
+    font-weight: 700;\
+    color: #1a1a1a;\
+    line-height: 1.3;\
+    margin-bottom: 10px;\
+  \}\
+\
+  .card-duration \{\
+    font-size: 12px;\
+    color: #999;\
+    margin-bottom: 10px;\
+  \}\
+\
+  .sessions \{\
+    display: flex;\
+    gap: 6px;\
+    flex-wrap: wrap;\
+  \}\
+\
+  .session-tag \{\
+    font-size: 12px;\
+    font-weight: 600;\
+    background: #FFF0F3;\
+    color: #E8294A;\
+    border: 1.5px solid #FFB3C1;\
+    padding: 3px 10px;\
+    border-radius: 20px;\
+  \}\
+\
+  .modal-backdrop \{\
+    position: fixed;\
+    inset: 0;\
+    background: rgba(0,0,0,0.5);\
+    z-index: 1000;\
+    display: flex;\
+    align-items: center;\
+    justify-content: center;\
+    padding: 1.5rem;\
+    opacity: 0;\
+    pointer-events: none;\
+    transition: opacity 0.2s;\
+  \}\
+\
+  .modal-backdrop.open \{\
+    opacity: 1;\
+    pointer-events: all;\
+  \}\
+\
+  .modal \{\
+    background: white;\
+    border-radius: 20px;\
+    max-width: 560px;\
+    width: 100%;\
+    max-height: 90vh;\
+    overflow-y: auto;\
+    transform: scale(0.95);\
+    transition: transform 0.25s ease;\
+    border: 2px solid #FFD6DF;\
+  \}\
+\
+  .modal-backdrop.open .modal \{\
+    transform: scale(1);\
+  \}\
+\
+  .modal-top \{\
+    background: #E8294A;\
+    padding: 1.5rem;\
+    display: flex;\
+    gap: 1rem;\
+    align-items: flex-start;\
+    position: relative;\
+  \}\
+\
+  .modal-poster \{\
+    width: 80px;\
+    height: 120px;\
+    object-fit: cover;\
+    border-radius: 10px;\
+    flex-shrink: 0;\
+    border: 2px solid rgba(255,255,255,0.3);\
+  \}\
+\
+  .modal-poster-placeholder \{\
+    width: 80px;\
+    height: 120px;\
+    border-radius: 10px;\
+    flex-shrink: 0;\
+    background: rgba(255,255,255,0.15);\
+    display: flex;\
+    align-items: center;\
+    justify-content: center;\
+    border: 2px solid rgba(255,255,255,0.2);\
+  \}\
+\
+  .modal-poster-placeholder svg \{ width: 32px; height: 32px; color: white; opacity: 0.6; \}\
+\
+  .modal-top-meta \{ flex: 1; padding-top: 4px; \}\
+\
+  .modal-top-genre \{\
+    font-size: 11px;\
+    font-weight: 700;\
+    letter-spacing: 0.1em;\
+    text-transform: uppercase;\
+    color: rgba(255,255,255,0.75);\
+    margin-bottom: 6px;\
+  \}\
+\
+  .modal-top-title \{\
+    font-size: 1.3rem;\
+    font-weight: 700;\
+    color: white;\
+    line-height: 1.2;\
+    margin-bottom: 8px;\
+  \}\
+\
+  .modal-top-duration \{\
+    font-size: 13px;\
+    color: rgba(255,255,255,0.75);\
+    margin-bottom: 12px;\
+  \}\
+\
+  .modal-top-sessions \{\
+    display: flex;\
+    gap: 6px;\
+    flex-wrap: wrap;\
+  \}\
+\
+  .modal-session-tag \{\
+    font-size: 12px;\
+    font-weight: 600;\
+    background: rgba(255,255,255,0.2);\
+    color: white;\
+    padding: 4px 12px;\
+    border-radius: 20px;\
+    border: 1.5px solid rgba(255,255,255,0.3);\
+  \}\
+\
+  .modal-close \{\
+    position: absolute;\
+    top: 12px;\
+    right: 12px;\
+    background: rgba(255,255,255,0.2);\
+    border: none;\
+    color: white;\
+    width: 32px;\
+    height: 32px;\
+    border-radius: 50%;\
+    font-size: 16px;\
+    cursor: pointer;\
+    display: flex;\
+    align-items: center;\
+    justify-content: center;\
+    font-family: 'Lexend', sans-serif;\
+  \}\
+\
+  .modal-close:hover \{ background: rgba(255,255,255,0.35); \}\
+\
+  .modal-synopsis-section \{\
+    padding: 1.5rem;\
+  \}\
+\
+  .modal-synopsis-label \{\
+    font-size: 11px;\
+    font-weight: 700;\
+    letter-spacing: 0.1em;\
+    text-transform: uppercase;\
+    color: #E8294A;\
+    margin-bottom: 10px;\
+  \}\
+\
+  .modal-synopsis \{\
+    font-size: 14px;\
+    line-height: 1.8;\
+    color: #444;\
+    font-weight: 400;\
+  \}\
+\
+  footer \{\
+    text-align: center;\
+    padding: 1.5rem;\
+    font-size: 12px;\
+    color: #bbb;\
+    margin-top: 1rem;\
+  \}\
+\
+  @media (max-width: 500px) \{\
+    .grid \{ grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 1rem; \}\
+    .modal-top \{ flex-direction: column; \}\
+  \}\
+</style>\
+</head>\
+<body>\
+\
+<header>\
+  <h1>\uc0\u55356 \u57260  C\'9cur Hebdo Cin\'e9ma</h1>\
+  <p>Films \'e0 l'affiche cette semaine</p>\
+</header>\
+\
+\
+<main class="grid" id="grid"></main>\
+\
+<div class="modal-backdrop" id="modal-backdrop" onclick="closeModal(event)">\
+  <div class="modal">\
+    <div class="modal-top" id="modal-top"></div>\
+    <div class="modal-synopsis-section" id="modal-synopsis"></div>\
+  </div>\
+</div>\
+\
+<footer>C\'9cur Hebdo Cin\'e9ma \'b7 Pour modifier, ouvrez le fichier dans un \'e9diteur de texte</footer>\
+\
+<script>\
+/* =====================================================\
+   DONN\'c9ES \'97 Modifiez ici pour ajouter / changer les films\
+   ===================================================== */\
+const FILMS = [\
+  \{\
+    id: 'f1',\
+    titre: 'Brokeback Mountain',\
+    genre: 'Drame',\
+    duree: '2h14',\
+    seances: ['14:00', '20:30'],\
+    image: '', // ex: "images/brokeback.jpg" ou lien Google Drive\
+    synopsis: "Trois amis ins\'e9parables \'97 Pe\'e7ou, MT et Pekka \'97 partent passer un week-end en for\'eat, bien d\'e9cid\'e9s \'e0 camper, p\'eacher\'85 et prouver qu'ils savent survivre sans Wi-Fi. R\'e9sultat : z\'e9ro poisson, beaucoup de pluie, et une tension inattendue qui s'invite entre les tentes. Entre feux de camp rat\'e9s et confidences nocturnes, Pe\'e7ou et MT commencent \'e0 se plaindre que Pekka \'ab leur monte un peu trop dessus \'bb. Coinc\'e9s dans la nature (et dans leurs \'e9motions), les trois gar\'e7ons vont d\'e9couvrir que ce week-end pourrait bien mettre leur amiti\'e9 \'e0 l'\'e9preuve\'85 pour la transformer en quelque chose de plus grand \'97 ou de beaucoup plus compliqu\'e9."\
+  \},\
+  \{\
+    id: 'f2',\
+    titre: 'Pole Express',\
+    genre: 'Animation',\
+    duree: '1h40',\
+    seances: ['13:30', '18:00'],\
+    image: 'https://drive.google.com/uc?export=view&id=1hgHjYjSlICzqdlrLYv5Q7xN-ZNlK13U',\
+    synopsis: "La veille d'un retour tant attendu, Zyzy, un gar\'e7on h\'e9sitant et peu s\'fbr de lui, part en randonn\'e9e avec ses amis, avec la promesse de rentrer ensemble \'e0 v\'e9lo. Mais face \'e0 l'effort du trajet retour, il c\'e8de \'e0 la peur et les abandonne en secret. Sur un quai d\'e9sert, un train \'e9trange appara\'eet, semblant n'attendre que lui. \'c0 bord, Zyzy entame un voyage inattendu, peupl\'e9 de rencontres troublantes et de situations qui refl\'e8tent ses choix et ses regrets."\
+  \},\
+  \{\
+    id: 'f3',\
+    titre: 'Vacances romaines',\
+    genre: 'Romance',\
+    duree: '1h58',\
+    seances: ['15:00', '21:00'],\
+    image: '',\
+    synopsis: "Larhow et Rayleigh forment un couple heureux. Pour \'e9chapper \'e0 la routine suisse, ils s'offrent un week-end en Italie, entre les paysages enchanteurs du lac de C\'f4me et l'effervescence de Milan. Entre disputes absurdes et moments de complicit\'e9 inattendus, ils red\'e9couvrent ce qui les unit vraiment."\
+  \},\
+  \{\
+    id: 'f4',\
+    titre: 'La Piscine',\
+    genre: 'Thriller',\
+    duree: '2h00',\
+    seances: ['16:30', '20:00'],\
+    image: 'https://drive.google.com/uc?export=view&id=1z91aGGXbgZlhLIRiiPtaXz3j8wCc-ja6',\
+    synopsis: "Colombe a tout pour r\'e9ussir : une carri\'e8re brillante, un agenda surcharg\'e9 et une image de \'ab girl boss \'bb parfaitement ma\'eetris\'e9e. Mais en une semaine, tout d\'e9raille. Sans pr\'e9venir personne, elle claque tout et s'\'e9chappe direction le Cap Ferret, bien d\'e9cid\'e9e \'e0 ne rien faire\'85 ou presque. Entre l\'e2cher-prise et nouvelles rencontres, Colombe va devoir choisir : reprendre sa vie l\'e0 o\'f9 elle l'a laiss\'e9e\'85 ou oser en inventer une nouvelle."\
+  \},\
+  \{\
+    id: 'f5',\
+    titre: 'Rio',\
+    genre: 'Animation',\
+    duree: '1h36',\
+    seances: ['14:00', '17:30'],\
+    image: '',\
+    synopsis: "Alors qu'elle assiste au concert de Theodora, Mawi rate son itin\'e9raire vers Rio. Faute de voyage, elle se rend \'e0 un concert de bossa nova la semaine suivante. Elle esp\'e8re encore, au d\'e9tour d'une chanson, trouver quelqu'un avec qui danser la salsa..."\
+  \},\
+  \{\
+    id: 'f6',\
+    titre: 'Comment se faire larguer en 10 le\'e7ons',\
+    genre: 'Com\'e9die',\
+    duree: '1h55',\
+    seances: ['18:00', '21:30'],\
+    image: '',\
+    synopsis: "Tela, femme ind\'e9pendante et farouchement libre, accepte de passer un week-end \'e0 Saint-\'c9tienne avec des amis. Mais l'arriv\'e9e de Gros Zizi, son amant aussi impr\'e9visible qu'envahissant, vient bouleverser tous ses plans. Apr\'e8s une soir\'e9e bien trop arros\'e9e dont elle ne garde aucun souvenir, Tela d\'e9couvre qu'elle a \'e9pous\'e9 Gros Zizi. Coinc\'e9e dans un mariage qu'elle n'a jamais voulu, elle va tout tenter pour retrouver sa libert\'e9."\
+  \},\
+  \{\
+    id: 'f7',\
+    titre: 'Film 9',\
+    genre: 'Action',\
+    duree: '2h00',\
+    seances: ['19:00'],\
+    image: '',\
+    synopsis: 'Synopsis \'e0 renseigner...'\
+  \},\
+  \{\
+    id: 'f8',\
+    titre: 'Film 10',\
+    genre: 'Drame',\
+    duree: '1h30',\
+    seances: ['16:00'],\
+    image: '',\
+    synopsis: 'Synopsis \'e0 renseigner...'\
+  \}\
+];\
+\
+/* ===== RENDU ===== */\
+const filmIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="2"/><path d="M7 2v20M17 2v20M2 12h20M2 7h5M2 17h5M17 7h5M17 17h5"/></svg>`;\
+\
+function renderCards(films) \{\
+  const grid = document.getElementById('grid');\
+  grid.innerHTML = '';\
+  if (!films.length) \{\
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem;color:#bbb">Aucun film dans cette cat\'e9gorie.</div>';\
+    return;\
+  \}\
+  films.forEach(film => \{\
+    const imgHtml = film.image\
+      ? `<img src="$\{film.image\}" alt="$\{film.titre\}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block" onerror="this.parentElement.innerHTML='<div class=card-img-placeholder>$\{filmIcon.replace(/"/g, "&quot;")\}</div>'">`\
+      : `<div class="card-img-placeholder">$\{filmIcon\}</div>`;\
+\
+    const card = document.createElement('div');\
+    card.className = 'film-card';\
+    card.dataset.genre = film.genre;\
+    card.onclick = () => openModal(film.id);\
+    card.innerHTML = `\
+      <div class="card-img-wrap">\
+        $\{imgHtml\}\
+        <span class="genre-badge">$\{film.genre\}</span>\
+      </div>\
+      <div class="card-body">\
+        <div class="card-title">$\{film.titre\}</div>\
+        <div class="card-duration">\uc0\u9201  $\{film.duree\}</div>\
+        <div class="sessions">$\{film.seances.map(s => `<span class="session-tag">$\{s\}</span>`).join('')\}</div>\
+      </div>\
+    `;\
+    grid.appendChild(card);\
+  \});\
+\}\
+\
+function filterFilms(genre) \{\
+  document.querySelectorAll('.filter-btn').forEach(b => \{\
+    b.classList.toggle('active', b.textContent.trim() === (genre === 'tous' ? 'Tous' : genre));\
+  \});\
+  renderCards(genre === 'tous' ? FILMS : FILMS.filter(f => f.genre === genre));\
+\}\
+\
+/* ===== MODAL ===== */\
+function openModal(id) \{\
+  const film = FILMS.find(f => f.id === id);\
+  if (!film) return;\
+\
+  const imgHtml = film.image\
+    ? `<img class="modal-poster" src="$\{film.image\}" alt="$\{film.titre\}" onerror="this.outerHTML='<div class=modal-poster-placeholder>$\{filmIcon.replace(/"/g, "&quot;")\}</div>'">`\
+    : `<div class="modal-poster-placeholder">$\{filmIcon\}</div>`;\
+\
+  document.getElementById('modal-top').innerHTML = `\
+    $\{imgHtml\}\
+    <div class="modal-top-meta">\
+      <div class="modal-top-genre">$\{film.genre\}</div>\
+      <div class="modal-top-title">$\{film.titre\}</div>\
+      <div class="modal-top-duration">\uc0\u9201  $\{film.duree\}</div>\
+      <div class="modal-top-sessions">$\{film.seances.map(s => `<span class="modal-session-tag">$\{s\}</span>`).join('')\}</div>\
+    </div>\
+    <button class="modal-close" onclick="closeModalBtn()">\uc0\u10005 </button>\
+  `;\
+\
+  document.getElementById('modal-synopsis').innerHTML = `\
+    <div class="modal-synopsis-label">Synopsis</div>\
+    <p class="modal-synopsis">$\{film.synopsis\}</p>\
+  `;\
+\
+  document.getElementById('modal-backdrop').classList.add('open');\
+  document.body.style.overflow = 'hidden';\
+\}\
+\
+function closeModal(e) \{\
+  if (e.target === document.getElementById('modal-backdrop')) closeModalBtn();\
+\}\
+function closeModalBtn() \{\
+  document.getElementById('modal-backdrop').classList.remove('open');\
+  document.body.style.overflow = '';\
+\}\
+document.addEventListener('keydown', e => \{ if (e.key === 'Escape') closeModalBtn(); \});\
+\
+renderCards(FILMS);\
+</script>\
+</body>\
+</html>}
